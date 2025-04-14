@@ -1,0 +1,42 @@
+# Contributions de Innocent au projet "ticket-booking-system"
+
+1. Création de la base de données
+   - Conception du schéma de la base de données MySQL.
+   - Création de la table `reservations` avec les colonnes suivantes :
+     - id (clé primaire auto-incrémentée)
+     - nom (varchar)
+     - email (varchar)
+     - type_transport (varchar)
+     - date_reservation (date)
+     - heure (time)
+     - date_creation (timestamp par défaut à CURRENT_TIMESTAMP)
+
+2. Connexion à la base de données
+   - Mise en place de la classe `DatabaseManager.java` permettant de se connecter à la base MySQL.
+   - Ajout du driver JDBC (mysql-connector-j) au projet.
+   - Vérification de la connexion via une classe `Main` de test.
+
+3. Développement de l'interface Swing
+   - Création de la classe `ReservationUI.java`.
+   - Interface graphique permettant à l’utilisateur de :
+     - Choisir un type de transport (Cinéma, Bus, Avion)
+     - Saisir le nom, l’email, la date et l’heure de réservation
+     - Réserver via un bouton (avec appel à `ReservationDAO`)
+     - Générer automatiquement un PDF contenant les informations de la réservation
+     - Afficher les réservations existantes depuis la base de données
+   - Gestion des erreurs utilisateur (champ vide, erreur de format).
+
+4. Génération du fichier PDF
+   - Intégration avec `PDFGenerator.java` pour créer automatiquement un billet PDF contenant les informations de réservation après validation.
+   - Utilisation de la bibliothèque iText.
+
+5. Rédaction de la documentation
+   - Création du fichier `README.md` à la racine du projet.
+   - Contenu du README :
+     - Description du projet
+     - Technologies utilisées
+     - Instructions d’installation et d’exécution
+     - Capture d’écran de l’interface
+     - Liste des fonctionnalités
+     - Auteurs et contributions
+
