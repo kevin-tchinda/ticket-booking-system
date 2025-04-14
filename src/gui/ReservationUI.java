@@ -5,123 +5,137 @@ import model.Reservation;
 import utils.PDFGenerator;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
-import java.awt.Desktop;
 import java.util.List;
 import java.util.UUID;
 
 public class ReservationUI extends JFrame {
 
-    // Déclaration des composants de l'interface utilisateur
     private JComboBox<String> typeBox;
     private JTextField nameField, emailField;
     private JTextField dateField, timeField;
     private JTextArea reservationListArea;
 
-    // Constructeur de l'interface utilisateur
     public ReservationUI() {
-        setTitle("Système de Réservation");
-        setSize(500, 400);
+        setTitle("🎟️ Système de Réservation");
+        setSize(600, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(7, 2, 10, 10));
 
-        // Ajout des composants à l'interface
-        add(new JLabel("Type de Transport:"));
-        typeBox = new JComboBox<>(new String[]{"Cinéma", "Bus", "Avion"});
-        add(typeBox);
+        // Panel principal avec padding et BoxLayout
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBorder(new EmptyBorder(20, 30, 20, 30)); // marges intérieures
 
-        add(new JLabel("Nom:"));
-        nameField = new JTextField();
-        add(nameField);
+        Font labelFont = new Font("SansSerif", Font.BOLD, 14);
+        Color accentColor = new Color(66, 135, 245); // bleu doux
+        Color backgroundColor = new Color(245, 248, 252);
 
-        add(new JLabel("Email:"));
-        emailField = new JTextField();
-        add(emailField);
+        // Labels et champs stylés
+        mainPanel.setBackground(backgroundColor);
 
-        add(new JLabel("Date (yyyy-MM-dd):"));
-        dateField = new JTextField();
-        add(dateField);
+        mainPanel.add(createLabeledField("Type de Transport:", typeBox = new JComboBox<>(new String[]{"Cinéma", "Bus", "Avion"}), labelFont));
+        mainPanel.add(createLabeledField("Nom:", nameField = new JTextField(), labelFont));
+        mainPanel.add(createLabeledField("Email:", emailField = new JTextField(), labelFont));
+        mainPanel.add(createLabeledField("Date (yyyy-MM-dd):", dateField = new JTextField(), labelFont));
+        mainPanel.add(createLabeledField("Heure (HH:mm):", timeField = new JTextField(), labelFont));
 
-        add(new JLabel("Heure (HH:mm):"));
-        timeField = new JTextField();
-        add(timeField);
+        // Boutons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        buttonPanel.setOpaque(false);
 
-        // Bouton pour effectuer une réservation
         JButton reserveButton = new JButton("Réserver");
-        reserveButton.addActionListener(this::handleReservation);  // Action pour réserver
-        add(reserveButton);
-
-        // Bouton pour afficher les réservations existantes
         JButton showReservationsButton = new JButton("Afficher Réservations");
-        showReservationsButton.addActionListener(this::handleShowReservations);  // Action pour afficher les réservations
-        add(showReservationsButton);
 
-        // Zone de texte pour afficher les réservations existantes
-        reservationListArea = new JTextArea();
-        reservationListArea.setEditable(false);  // Non modifiable
-        JScrollPane scrollPane = new JScrollPane(reservationListArea);  // Ajout d'un défilement
-        add(scrollPane);
+        styleButton(reserveButton, accentColor);
+        styleButton(showReservationsButton, new Color(34, 170, 89)); // vert
 
-        setVisible(true);  // Affichage de l'interface
+        reserveButton.addActionListener(this::handleReservation);
+        showReservationsButton.addActionListener(this::handleShowReservations);
+
+        buttonPanel.add(reserveButton);
+        buttonPanel.add(showReservationsButton);
+        mainPanel.add(buttonPanel);
+
+        // Zone de texte pour les réservations
+        reservationListArea = new JTextArea(8, 40);
+        reservationListArea.setEditable(false);
+        reservationListArea.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        reservationListArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        JScrollPane scrollPane = new JScrollPane(reservationListArea);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("📄 Réservations"));
+
+        mainPanel.add(scrollPane);
+
+        setContentPane(mainPanel);
+        setVisible(true);
     }
 
-    // Méthode pour gérer la réservation
+    private JPanel createLabeledField(String labelText, JComponent inputField, Font labelFont) {
+        JPanel panel = new JPanel(new BorderLayout(10, 5));
+        panel.setMaximumSize(new Dimension(500, 50));
+        panel.setOpaque(false);
+
+        JLabel label = new JLabel(labelText);
+        label.setFont(labelFont);
+
+        inputField.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        inputField.setBorder(new LineBorder(Color.LIGHT_GRAY, 1, true));
+        inputField.setPreferredSize(new Dimension(200, 30));
+
+        panel.add(label, BorderLayout.WEST);
+        panel.add(inputField, BorderLayout.CENTER);
+
+        return panel;
+    }
+
+    private void styleButton(JButton button, Color bgColor) {
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setFont(new Font("SansSerif", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
     private void handleReservation(ActionEvent e) {
-        // Récupération des données saisies dans l'interface utilisateur
         String type = (String) typeBox.getSelectedItem();
         String name = nameField.getText();
         String email = emailField.getText();
         String date = dateField.getText();
         String time = timeField.getText();
-        String code = UUID.randomUUID().toString().substring(0, 8);  // Génération d'un code unique
+        String code = UUID.randomUUID().toString().substring(0, 8);
 
-        // Création d'un objet Reservation avec les données
         Reservation reservation = new Reservation(name, email, type, date, time, code);
 
         try {
-            // Ajout de la réservation dans la base de données
             ReservationDAO.ajouterReservation(name, email, type, date, time);
-
-            // Affichage d'un message de succès à l'utilisateur
-            JOptionPane.showMessageDialog(this, "Réservation réussie !");
-
-            // Génération du ticket PDF pour la réservation
+            JOptionPane.showMessageDialog(this, "✅ Réservation réussie !");
             String pdfFilePath = PDFGenerator.generateTicket(reservation);
-
-            // Tentative d'ouverture automatique du fichier PDF généré
             File pdfFile = new File(pdfFilePath);
             if (pdfFile.exists()) {
-                Desktop desktop = Desktop.getDesktop();
-                desktop.open(pdfFile);  // Ouvre le PDF avec le programme par défaut
+                Desktop.getDesktop().open(pdfFile);
             } else {
                 JOptionPane.showMessageDialog(this, "Erreur: le fichier PDF n'a pas été généré.");
             }
         } catch (Exception ex) {
-            // Gestion des erreurs si la réservation échoue
             JOptionPane.showMessageDialog(this, "Erreur lors de la réservation : " + ex.getMessage());
         }
     }
 
-    // Méthode pour afficher toutes les réservations existantes
     private void handleShowReservations(ActionEvent e) {
         try {
-            // Récupération des réservations depuis la base de données
             List<String> reservations = ReservationDAO.afficherReservations();
-
-            // Affichage des réservations dans la zone de texte
-            reservationListArea.setText("");  // Efface les anciennes réservations
+            reservationListArea.setText("");
             for (String reservation : reservations) {
-                reservationListArea.append(reservation + "\n");  // Ajoute chaque réservation à la zone de texte
+                reservationListArea.append(reservation + "\n");
             }
         } catch (Exception ex) {
-            // Gestion des erreurs lors de la récupération des réservations
             JOptionPane.showMessageDialog(this, "Erreur lors de l'affichage des réservations : " + ex.getMessage());
         }
     }
-
 }
