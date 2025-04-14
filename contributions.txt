@@ -40,3 +40,13 @@
      - Liste des fonctionnalités
      - Auteurs et contributions
 
+
+# Contributions de Kevin au projet "ticket-booking-system"
+
+1. Amélioration de l'interface graphique - Swing
+   - La classe `ReservationUI.java`.
+   - Interface graphique conviviales.
+   - Amélioration de la structure d'affichage et ajout de style.
+2. Gestion de travail de groupe sur GitHub avec Git
+
+
