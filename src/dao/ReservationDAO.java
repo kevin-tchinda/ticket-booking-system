@@ -8,8 +8,11 @@ public class ReservationDAO {
 
     // Informations de connexion à la base de données
     private static final String URL = "jdbc:mysql://127.0.0.1:3306/reservation_db";
-    private static final String USER = "root";
-    private static final String PASSWORD = "200408";
+//    private static final String USER = "root";
+//    private static final String PASSWORD = "200408";
+
+    private static final String USER = "kevin";
+    private static final String PASSWORD = "reservation_billet_password";
 
     // Méthode pour obtenir la connexion à la base de données
     public static Connection getConnection() throws SQLException {
